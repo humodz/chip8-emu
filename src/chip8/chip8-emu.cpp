@@ -2,9 +2,9 @@
 #include <fstream>
 #include <stdexcept>
 #include <sstream>
+#include <boost/format.hpp>
 #include "chip8-emu.h"
 #include "chip8-disassembler.h"
-#include "util.h"
 
 chip8::Chip8Emu::Chip8Emu() {
   hardReset();
@@ -100,6 +100,7 @@ void chip8::Chip8Emu::updateTimers() {
 }
 
 void chip8::Chip8Emu::emulateCycle(int keyEvent, std::ostream *os) {
+  using boost::format;
   if (!isRunning()) {
     return;
   }
@@ -109,7 +110,7 @@ void chip8::Chip8Emu::emulateCycle(int keyEvent, std::ostream *os) {
   bool incrementPc = true;
 
   if (os != nullptr) {
-    (*os) << "[" << util::formatHex(pc, 4) << "] ";
+    (*os) << format("[0x%04X] ") % pc;
     printInstruction(opCode, *os);
   }
 
@@ -363,9 +364,6 @@ void chip8::Chip8Emu::emulateCycle(int keyEvent, std::ostream *os) {
           break;
         }
         case 0x0065: {
-          if (os) {
-            (*os) << "LOADING " << (vx + 1) << " REGISTERS" << std::endl;
-          }
           for (int i = 0; i <= vx; i++) {
             if (I + i < 0 || I + i > MEMORY_SIZE) {
               state = EmulationState::STOPPED_SEGFAULT;
@@ -373,14 +371,6 @@ void chip8::Chip8Emu::emulateCycle(int keyEvent, std::ostream *os) {
             }
 
             V[i] = memory[I + i];
-
-            if (os) {
-              (*os)
-                << "V" << util::formatHex(i, 0, false)
-                << " <- " << util::formatHex(V[i], 2)
-                << " (at " << util::formatHex(I + i, 2) << ")"
-                << std::endl;
-            }
           }
           break;
         }

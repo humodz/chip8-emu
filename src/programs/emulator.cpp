@@ -2,11 +2,12 @@
 #include <cmath>
 #include <array>
 #include <sstream>
+#include <ctime>
 #include <gfx/gfx.h>
 #include <chip8/chip8-emu.h>
 #include <chip8/chip8-disassembler.h>
-#include <chip8/util.h>
 #include <etc/keypad.h>
+#include <boost/format.hpp>
 
 class EmulatorApp {
 public:
@@ -100,7 +101,8 @@ public:
     }
 
     for (int i = 0; i < emu.sp; i++) {
-      ss << util::formatHex(emu.stack[i]) << " ";
+      using boost::format;
+      ss << format("0x%03X ") % emu.stack[i];
     }
 
     ss << " \n";
@@ -123,6 +125,7 @@ public:
 
   int run(int argc, char **argv) {
     (void) argc; (void) argv;
+    srand(time(NULL));
 
     int FONT_HEIGHT = 12;
 

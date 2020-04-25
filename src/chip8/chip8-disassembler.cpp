@@ -7,9 +7,14 @@
 #include <cassert>
 #include <stdexcept>
 #include <sstream>
+#include <boost/format.hpp>
 
 #include "chip8-disassembler.h"
-#include "util.h"
+
+using boost::format;
+
+#define FMT_REG "V%X"
+#define FMT_VAL(L) "0x%0" #L "X"
 
 void chip8::disassembleProgram(const std::string &filePath, std::ostream &os) {
     std::ifstream fs{filePath.data(), std::ios_base::binary};
@@ -30,14 +35,14 @@ void chip8::disassembleProgram(const std::string &filePath, std::ostream &os) {
 
     for (int pc = 0; pc < programSize; pc += 2) {
       uint16_t opCode = (memory[pc] << 8) | memory[pc + 1];
-      os << "[" << util::formatHex(pc + 0x200, 4) << "] ";
+      os << format("[" FMT_VAL(4) "] ") % (pc + 0x200);
       printInstruction(opCode, os);
       os << "\n";
     }
 }
 
 void chip8::printInstruction(uint16_t opCode, std::ostream &os) {
-  os << util::formatHex(opCode, 4) << ": ";
+  os << format(FMT_VAL(4) ": ") % opCode;
 
   int vx = (opCode & 0x0F00) >> 8;
   int vy = (opCode & 0x00F0) >> 4;
@@ -65,53 +70,53 @@ void chip8::printInstruction(uint16_t opCode, std::ostream &os) {
       break;
     }
     case 0x1: {
-      os << "GOTO " << util::formatHex(address, 3);
+      os << format("GOTO " FMT_VAL(3)) % address;
       break;
     }
     case 0x2: {
-      os << "CALL " << util::formatHex(address, 3); 
+      os << format("CALL " FMT_VAL(3)) % address;
       break;
     }
     case 0x3: {
-      os << "SKIP.EQ V" << util::formatHex(vx, 0, false) << " " << util::formatHex(immediate, 2);
+      os << format("SKIP.EQ " FMT_REG " " FMT_VAL(2)) % vx % immediate;
       break;
     }
     case 0x4: {
-      os << "SKIP.NE V" << util::formatHex(vx, 0, false) << " " << util::formatHex(immediate, 2);
+      os << format("SKIP.NE " FMT_REG " " FMT_VAL(2)) % vx % immediate;
       break;
     }
     case 0x6: {
-      os << "SET V" << util::formatHex(vx, 0, false) << " " << util::formatHex(immediate, 2);
+      os << format("SET " FMT_REG " " FMT_VAL(2)) % vx % immediate;
       break;
     }
     case 0x7: {
-      os << "ADD V" << util::formatHex(vx, 0, false) << " " << util::formatHex(immediate, 2);
+      os << format("ADD " FMT_REG " " FMT_VAL(2)) % vx % immediate;
       break;
     }
     case 0x8: {
       switch (mathOp) {
         case 0x0: {
-          os << "SETR V" << util::formatHex(vx, 0, false) << " V" << util::formatHex(vy, 0, false);
+          os << format("SET " FMT_REG " " FMT_REG) % vx % vy;
           break;
         }
         case 0x2: {
-          os << "BAND V" << util::formatHex(vx, 0, false) << " V" << util::formatHex(vy, 0, false);
+          os << format("AND " FMT_REG " " FMT_REG) % vx % vy;
           break;
         }
         case 0x4: {
-          os << "ADD V" << util::formatHex(vx, 0, false) << " V" << util::formatHex(vy, 0, false);
+          os << format("ADD " FMT_REG " " FMT_REG) % vx % vy;
           break;
         }
         case 0x5: {
-          os << "SUB V" << util::formatHex(vx, 0, false) << " V" << util::formatHex(vy, 0, false);
+          os << format("SUB " FMT_REG " " FMT_REG) % vx % vy;
           break;
         }
         case 0x6: {
-          os << "RSHIFT V" << util::formatHex(vx, 0, false);
+          os << format("RSHIFT " FMT_REG) % vx;
           break;
         }
         case 0xE: {
-          os << "LSHIFT V" << util::formatHex(vx, 0, false);
+          os << format("LSHIFT " FMT_REG) % vx;
           break;
         }
         default: {
@@ -122,31 +127,29 @@ void chip8::printInstruction(uint16_t opCode, std::ostream &os) {
       break;
     }
     case 0x9: {
-      os << "SKIP.RNE V" << util::formatHex(vx, 0, false) << " V" << util::formatHex(vy, 0, false);
+      os << format("SKIP.NE " FMT_REG " " FMT_REG) % vx % vy;
       break;
     }
     case 0xA: {
-      os << "SET.INDEX " << util::formatHex(address, 3);
+      os << format("SET.INDEX " FMT_VAL(3)) % address;
       break;
     }
     case 0xC: {
-      os << "RAND V" << util::formatHex(vx, 0, false) << " " << util::formatHex(immediate, 2);
+      os << format("RAND " FMT_REG " " FMT_VAL(2)) % vx % immediate;
       break;
     }
     case 0xD: {
-      os << "DRAW V" << util::formatHex(vx, 0, false)
-         << " V" << util::formatHex(vy, 0, false)
-         << " " << util::formatHex(spriteH);
+      os << format("DRAW " FMT_REG " " FMT_REG " " FMT_VAL(1)) % vx % vy % spriteH;
       break;
     }
     case 0xE: {
       switch(opCode & 0x00FF) {
         case 0x009E: {
-          os << "SKIP.KEY.EQ V" << util::formatHex(vx, 0, false);
+          os << format("SKIP.KEY.EQ " FMT_REG) % vx;
           break;
         }
         case 0x00A1: {
-          os << "SKIP.KEY.NE V" << util::formatHex(vx, 0, false);
+          os << format("SKIP.KEY.NE " FMT_REG) % vx;
           break;
         }
         default: {
@@ -159,39 +162,39 @@ void chip8::printInstruction(uint16_t opCode, std::ostream &os) {
     case 0xF: {
       switch(opCode & 0x00FF) {
         case 0x000A: {
-          os << "WAIT.KEY V" << util::formatHex(vx, 0, false);
+          os << format("WAIT.KEY " FMT_REG) % vx;
           break;
         }
         case 0x0007: {
-          os << "GET.DELAY V" << util::formatHex(vx, 0, false);
+          os << format("GET.DELAY " FMT_REG) % vx;
           break;
         }
         case 0x0015: {
-          os << "SET.DELAY V" << util::formatHex(vx, 0, false);
+          os << format("SET.DELAY " FMT_REG) % vx;
           break;
         }
         case 0x0018: {
-          os << "SET.SOUND V" << util::formatHex(vx, 0, false);
+          os << format("SET.SOUND " FMT_REG) % vx;
           break;
         }
         case 0x001E: {
-          os << "ADD.INDEX V" << util::formatHex(vx, 0, false);
+          os << format("ADD.INDEX " FMT_REG) % vx;
           break;
         }
         case 0x0029: {
-          os << "CHAR V" << util::formatHex(vx, 0, false);
+          os << format("CHAR " FMT_REG) % vx;
           break;
         }
         case 0x0033: {
-          os << "BCD V" << util::formatHex(vx, 0, false);
+          os << format("BCD " FMT_REG) % vx;
           break;
         }
         case 0x0055: {
-          os << "DUMP V0.." << util::formatHex(vx, 0, false);
+          os << format("DUMP V0.." FMT_REG) % vx;
           break;
         }
         case 0x0065: {
-          os << "LOAD V0.." << util::formatHex(vx, 0, false);
+          os << format("LOAD V0.." FMT_REG) % vx;
           break;
         }
         default: {
