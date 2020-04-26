@@ -69,27 +69,20 @@ public:
   void renderEmulatorStateText(
     chip8::Chip8Emu &emu, TTF_Font *font, int x, int y
   ) {
-    constexpr int textBufSize = 128; 
-    char textBuffer[textBufSize] = "";
+    using boost::format;
     std::stringstream ss;
     SDL_Rect textRect;
     gfx::Texture texture;
 
-    snprintf(
-      textBuffer, textBufSize,
-      "pc=0x%x I=0x%x sp=%d",
-      emu.pc, emu.I, emu.sp
-    );
-
-    ss << textBuffer << "\n";
+    ss << format("pc=0x%X I=0x%X sp=%d") % emu.pc % emu.I % emu.sp << "\n";
 
     for (int i = 0; i < 16; i++) {
-      snprintf(textBuffer, textBufSize, "V%x=0x%02x ", i, emu.V[i]);
-      ss << textBuffer;
+      ss << format("V%X=0x%02X ") % i % ((int) emu.V[i]);
       if (i % 4 == 3) {
         ss << "\n";
       }
     }
+
 
     chip8::printInstruction(emu.opCode, ss);
     ss << "\n";
@@ -108,15 +101,15 @@ public:
     ss << " \n";
 
     int lineOffsetY = 0;
+    std::string line;
 
     while (ss.good()) {
-      std::string line;
       std::getline(ss, line);
       if (line.size() != 0) {
         texture = gfx::Texture::fromRenderedText(renderer.data, font, line.c_str(), {0, 0, 0, 0});
         SDL_QueryTexture(texture.data, nullptr, nullptr, &textRect.w, &textRect.h);
         textRect.x = x;
-        textRect.y = y + textRect.h + lineOffsetY;
+        textRect.y = y + lineOffsetY;
         SDL_RenderCopy(renderer.data, texture.data, nullptr, &textRect);
         lineOffsetY += textRect.h;
       }
@@ -127,13 +120,17 @@ public:
     (void) argc; (void) argv;
     srand(time(NULL));
 
-    int FONT_HEIGHT = 12;
+    if (argc < 2) {
+      std::cerr << "Argument missing: filename\n"; 
+    }
+
+    const char *filename = argv[1];
 
     chip8::Chip8Emu emu;
     emu.loadFont(chip8::defaultFont, chip8::defaultFontSize);
-    emu.loadProgramFromFile("c8games/TETRIS");
+    emu.loadProgramFromFile(argv[1]);
 
-    auto font = gfx::Font::fromFile("/usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf", FONT_HEIGHT);
+    auto font = gfx::Font::fromFile("/usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf", 12);
 
     etc::Keypad keypad;
 
@@ -191,8 +188,6 @@ public:
       for (int i = 0; i < chip8::NUM_KEYS; i++) {
         emu.key[i] = keypad.isPressed[i];
       }
-
-      // uint16_t nextOp = emu.fetch(emu.pc);
 
       if (!emu.isRunning()) {
         state = PAUSED;
