@@ -1,13 +1,14 @@
-
 #include <cmath>
 #include <array>
 #include <sstream>
 #include <ctime>
-#include <gfx/gfx.h>
-#include <chip8/chip8-emu.h>
-#include <chip8/chip8-disassembler.h>
-#include <etc/keypad.h>
+#include <stdexcept>
 #include <boost/format.hpp>
+#include <SDL2/SDL_image.h>
+#include <gfx/gfx.hpp>
+#include <chip8/chip8-emu.hpp>
+#include <chip8/chip8-disassembler.hpp>
+#include "keypad.hpp"
 
 class EmulatorApp {
 public:
@@ -121,18 +122,18 @@ public:
     srand(time(NULL));
 
     if (argc < 2) {
-      std::cerr << "Argument missing: filename\n"; 
+      throw std::runtime_error("Argument missing: filename"); 
     }
 
     const char *filename = argv[1];
 
     chip8::Chip8Emu emu;
     emu.loadFont(chip8::defaultFont, chip8::defaultFontSize);
-    emu.loadProgramFromFile(argv[1]);
+    emu.loadProgramFromFile(filename);
 
     auto font = gfx::Font::fromFile("/usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf", 12);
 
-    etc::Keypad keypad;
+    Keypad keypad;
 
     SDL_Rect textRect;
     SDL_Rect viewportRect;

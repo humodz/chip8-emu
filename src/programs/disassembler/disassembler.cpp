@@ -1,7 +1,6 @@
-#include <iostream>
-#include <chip8/chip8-disassembler.h>
-
 #include <algorithm>
+#include <iostream>
+#include <chip8/chip8-disassembler.hpp>
 
 int main(int argc, const char **argv) {
   (void) argc;

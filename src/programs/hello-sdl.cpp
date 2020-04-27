@@ -1,7 +1,7 @@
-#include <gfx/gfx.h>
-
 #include <cstdio>
 #include <iostream>
+#include <SDL2/SDL_image.h>
+#include <gfx/gfx.hpp>
 
 int main() {
   int WINDOW_WIDTH = 400;

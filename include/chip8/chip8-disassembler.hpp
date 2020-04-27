@@ -1,5 +1,5 @@
-#ifndef CHIP8_DISASSEMBLER_H
-#define CHIP8_DISASSEMBLER_H
+#ifndef CHIP8_DISASSEMBLER_HPP
+#define CHIP8_DISASSEMBLER_HPP
 
 #include <string>
 #include <iostream>

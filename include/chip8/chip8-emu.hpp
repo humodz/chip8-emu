@@ -1,5 +1,5 @@
-#ifndef CHIP8_EMU_H
-#define CHIP8_EMU_H
+#ifndef CHIP8_EMU_HPP
+#define CHIP8_EMU_HPP
 
 #include <cstdint>
 #include <string>

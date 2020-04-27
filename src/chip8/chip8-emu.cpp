@@ -3,8 +3,9 @@
 #include <stdexcept>
 #include <sstream>
 #include <boost/format.hpp>
-#include "chip8-emu.h"
-#include "chip8-disassembler.h"
+
+#include <chip8/chip8-emu.hpp>
+#include <chip8/chip8-disassembler.hpp>
 
 chip8::Chip8Emu::Chip8Emu() {
   hardReset();

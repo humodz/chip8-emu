@@ -9,7 +9,7 @@
 #include <sstream>
 #include <boost/format.hpp>
 
-#include "chip8-disassembler.h"
+#include <chip8/chip8-disassembler.hpp>
 
 using boost::format;
 
