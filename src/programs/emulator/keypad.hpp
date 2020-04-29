@@ -24,6 +24,21 @@ public:
     0xA, 0x0, 0xB, 0xF
   };
 
+  SDL_Color colors[2][2] = {
+    { // not pressed
+      // not dark
+      { 0xC0, 0xC0, 0xC0, 0xFF },
+      // dark
+      { 0x80, 0x80, 0x80, 0xFF },
+    },
+    { // pressed
+      // not dark
+      { 0xFF, 0x50, 0x50, 0xFF },
+      // dark
+      { 0xFF, 0x00, 0x00, 0xFF },
+    },
+  };
+
   Keypad() {
     std::fill(isPressed.begin(), isPressed.end(), false);
   }
@@ -31,9 +46,9 @@ public:
   void update(const uint8_t *sdlKeyboardState) {
     keyEvent = -1;
     for (int i = 0; i < 16; i++) {
-      bool newIsPressed = sdlKeyboardState[keyMappings[i]];
+      bool newIsPressed = sdlKeyboardState[keyMappings.at(i)];
 
-      if (keyEvent == -1 && newIsPressed && !isPressed[i]) {
+      if (keyEvent == -1 && newIsPressed && !isPressed.at(i)) {
         keyEvent = i;
       }
 
@@ -43,8 +58,6 @@ public:
 
   void render(SDL_Renderer *renderer, SDL_Rect *dstRect) {
     SDL_Rect dst;
-
-    Uint8 colors[2][2] = { {0xC0, 0x00}, {0x80, 0x40} };
 
     for (int y = 0; y < 4; y++) {
       for (int x = 0; x < 4; x++) {
@@ -57,16 +70,12 @@ public:
         dst.w = nextX - dst.x + 1;
         dst.h = nextY - dst.y + 1;
 
-        bool pressed = isPressed[keypadPositionMappings[x + y * 4]];
+        bool pressed = isPressed.at(keypadPositionMappings.at(x + y * 4));
         bool darker = (x + y) % 2 == 1;
 
-        SDL_SetRenderDrawColor(
-          renderer,
-          pressed ? 0xFF : darker ? 0x80 : 0xC0,
-          colors[darker][pressed],
-          colors[darker][pressed],
-          0xFF
-        );
+        SDL_Color *color = &colors[pressed][darker];
+
+        SDL_SetRenderDrawColor(renderer, color->r, color->g, color->b, 0xFF);
         SDL_RenderFillRect(renderer, &dst);
       }
     }

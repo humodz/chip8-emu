@@ -1,6 +1,7 @@
 #ifndef CHIP8_EMU_HPP
 #define CHIP8_EMU_HPP
 
+#include <array>
 #include <cstdint>
 #include <string>
 #include <iostream>

@@ -87,6 +87,10 @@ void chip8::Chip8Emu::drawScreen(std::ostream &os) {
 }
 
 uint16_t chip8::Chip8Emu::fetch(uint16_t address) {
+  if (address > MEMORY_SIZE) {
+    return 0;
+  }
+
   return (memory[address] << 8) | memory[address + 1]; 
 }
 

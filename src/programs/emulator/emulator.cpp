@@ -57,9 +57,9 @@ public:
     auto white = SDL_MapRGBA(format, 255, 255, 255, 255);
     auto black = SDL_MapRGBA(format, 0, 0, 0, 0);
 
-    for (int y = emu.lastDrawY; y < emu.lastDrawY + emu.lastDrawH; y++) {
+    for (int y = 0; y < chip8::GFX_HEIGHT; y++) {
       Uint32 *row = (Uint32 *) (pixels + pitch * y);
-      for (int x = emu.lastDrawX; x < emu.lastDrawX + emu.lastDrawW; x++) {
+      for (int x = 0; x < chip8::GFX_WIDTH; x++) {
         row[x] = emu.gfx[w * y + x] ? white : black;
       }
     }

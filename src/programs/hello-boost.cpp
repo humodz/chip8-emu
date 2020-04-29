@@ -1,15 +1,19 @@
 #include <iostream>
+#include <sstream>
+#include <string>
 #include <boost/format.hpp>
 
-#define FMT(x) "[" #x "]"
+template <class T>
+std::string toString(const T &val) {
+  std::stringstream ss;
+  ss << val;
+  return ss.str();
+}
 
 int main() {
   using boost::format;
-  using boost::io::group;
+  std::string a = toString(boost::format("oi"));
 
-  int value = 0x1AB;
-  int reg = 0xD;
-
-  std::cout << FMT(123) << "\n";
+  std::cout << a << "\n";
   return 0;
 }
