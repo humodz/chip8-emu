@@ -65,6 +65,7 @@ namespace chip8 {
     uint16_t sp; // stack pointer
     bool key[NUM_KEYS]; // pressed keys
     bool drawFlag;
+    bool playSoundFlag;
     int lastDrawX;
     int lastDrawY;
     int lastDrawW;
@@ -77,6 +78,7 @@ namespace chip8 {
     void loadFont(const uint8_t *buffer, size_t bufferSize);
     void drawScreen(std::ostream &os);
     void updateTimers();
+    void notifySoundWasPlayed();
     void emulateCycle(int keyEvent, std::ostream *os = nullptr);
     void emulateCycle(int keyEvent, std::ostream &os) { emulateCycle(keyEvent, &os); }
     bool isRunning() {

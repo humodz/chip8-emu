@@ -28,6 +28,15 @@ namespace gfx {
     ~Sdl2TtfInit();
     Sdl2TtfInit(Sdl2TtfInit&) = delete;
   };
+
+  class Sdl2MixerInit {
+  public:
+    int status;
+
+    Sdl2MixerInit(int frequency, Uint16 format, int channels, int chunkSize);
+    ~Sdl2MixerInit();
+    Sdl2MixerInit(Sdl2MixerInit&) = delete;
+  };
 }
 
 #endif

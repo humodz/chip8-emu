@@ -1,4 +1,5 @@
 add_library(gfx STATIC
+  audio-chunk.cpp
   font.cpp
   renderer.cpp
   sdl-init.cpp

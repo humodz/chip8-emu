@@ -10,6 +10,7 @@ int main() {
   gfx::Sdl2Init sdl2Init(SDL_INIT_VIDEO);
   gfx::Sdl2ImgInit sdl2ImgInit(IMG_INIT_PNG & IMG_INIT_JPG);
   gfx::Sdl2TtfInit sdl2TtfInit;
+  gfx::Sdl2MixerInit sdl2MixerInit(44100, MIX_DEFAULT_FORMAT, 2, 2048);
 
   gfx::Window window(
     "Hello SDL",
@@ -22,6 +23,7 @@ int main() {
 
   auto font = gfx::Font::fromFile("/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf", 16);
   auto picture = gfx::Texture::fromFile(renderer.data, "assets/shore.jpg");
+  auto soundEffect = gfx::AudioChunk::fromFile("assets/blip.wav");
 
   SDL_SetRenderDrawColor(renderer.data, 0xFF, 0xFF, 0xFF, 0xFF);
 
@@ -40,6 +42,13 @@ int main() {
     while (SDL_PollEvent(&event) != 0) {
       if (event.type == SDL_QUIT) {
         quit = true;
+      } else if (event.type == SDL_KEYDOWN) {
+        auto key = event.key.keysym.sym;
+        if (key == SDLK_ESCAPE) {
+          quit = true;
+        } else if (key == SDLK_SPACE) {
+          Mix_PlayChannel(-1, soundEffect.data, 0);
+        }
       }
     }
 

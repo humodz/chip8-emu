@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_mixer.h>
 #include <gfx/util.hpp>
 
 namespace {
@@ -17,6 +18,8 @@ void gfxException(const char *file, int lineNumber, const char *sdlModule) {
     sdlError = IMG_GetError();
   } else if (strcmp(sdlModule, "TTF") == 0) {
     sdlError = TTF_GetError();
+  } else if (strcmp(sdlModule, "MIX") == 0) {
+    sdlError = Mix_GetError();
   }
 
   constexpr int bufSize = 1024 + 128;

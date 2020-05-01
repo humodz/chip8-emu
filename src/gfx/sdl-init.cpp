@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_mixer.h>
 #include <gfx/sdl-init.hpp>
 #include <gfx/util.hpp>
 
@@ -40,5 +41,18 @@ gfx::Sdl2TtfInit::Sdl2TtfInit() {
 gfx::Sdl2TtfInit::~Sdl2TtfInit() {
   if (status != -1) {
     TTF_Quit();
+  }
+}
+
+gfx::Sdl2MixerInit::Sdl2MixerInit(int frequency, Uint16 format, int channels, int chunkSize) {
+  status = Mix_OpenAudio(frequency, format, channels, chunkSize);
+  if (status == -1) {
+    GFX_MIX_ERROR();
+  }
+}
+
+gfx::Sdl2MixerInit::~Sdl2MixerInit() {
+  if (status != -1) {
+    Mix_CloseAudio();
   }
 }

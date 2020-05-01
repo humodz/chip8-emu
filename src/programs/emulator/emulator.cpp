@@ -19,15 +19,16 @@ public:
   gfx::Sdl2Init sdl2Init;
   gfx::Sdl2ImgInit sdl2ImgInit;
   gfx::Sdl2TtfInit sdl2TtfInit;
+  gfx::Sdl2MixerInit sdl2MixerInit;
   gfx::Window window;
   gfx::Renderer renderer;
-
   gfx::Texture gameScreen;
 
   EmulatorApp():
-    sdl2Init(SDL_INIT_VIDEO),
+    sdl2Init(SDL_INIT_EVERYTHING),
     sdl2ImgInit(IMG_INIT_PNG & IMG_INIT_JPG),
     sdl2TtfInit(),
+    sdl2MixerInit(44100, MIX_DEFAULT_FORMAT, 2, 2048),
     window(
       WINDOW_TITLE,
       SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
@@ -132,6 +133,7 @@ public:
     emu.loadProgramFromFile(filename);
 
     auto font = gfx::Font::fromFile("/usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf", 12);
+    auto beepSound = gfx::AudioChunk::fromFile("assets/blip.wav");
 
     Keypad keypad;
 
@@ -202,6 +204,11 @@ public:
         Uint32 newSinceLastFrameMs = SDL_GetTicks();
         emuTimersCounter += newSinceLastFrameMs - sinceLastFrameMs;
         sinceLastFrameMs = newSinceLastFrameMs;
+
+        if (emu.playSoundFlag) {
+          Mix_PlayChannel(-1, beepSound.data, 0);
+          emu.notifySoundWasPlayed();
+        }
 
         emu.emulateCycle(keypad.keyEvent);   
       }

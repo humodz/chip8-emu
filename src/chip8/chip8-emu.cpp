@@ -37,6 +37,7 @@ void chip8::Chip8Emu::hardReset() {
   sp = 0;
   std::fill(std::begin(key), std::end(key), 0);
   drawFlag = false;
+  playSoundFlag = false;
 }
 
 void chip8::Chip8Emu::loadProgramFromFile(const std::string &filePath) {
@@ -101,7 +102,14 @@ void chip8::Chip8Emu::updateTimers() {
 
   if (soundTimer > 0) {
     soundTimer--;
+    if (soundTimer == 0) {
+      playSoundFlag = true;
+    }
   }
+}
+
+void chip8::Chip8Emu::notifySoundWasPlayed() {
+  playSoundFlag = false;
 }
 
 void chip8::Chip8Emu::emulateCycle(int keyEvent, std::ostream *os) {

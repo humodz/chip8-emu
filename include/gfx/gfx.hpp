@@ -1,6 +1,7 @@
 #ifndef GFX_HPP
 #define GFX_HPP
 
+#include "audio-chunk.hpp"
 #include "font.hpp"
 #include "renderer.hpp"
 #include "sdl-init.hpp"
