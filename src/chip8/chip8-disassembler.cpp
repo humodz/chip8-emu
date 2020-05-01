@@ -85,6 +85,10 @@ void chip8::printInstruction(uint16_t opCode, std::ostream &os) {
       os << format("SKIP.NE " FMT_REG " " FMT_VAL(2)) % vx % immediate;
       break;
     }
+    case 0x5: {
+      os << format("SKIP.EQ " FMT_REG " " FMT_VAL(2)) % vx % immediate;
+      break;
+    }
     case 0x6: {
       os << format("SET " FMT_REG " " FMT_VAL(2)) % vx % immediate;
       break;
@@ -99,8 +103,16 @@ void chip8::printInstruction(uint16_t opCode, std::ostream &os) {
           os << format("SET " FMT_REG " " FMT_REG) % vx % vy;
           break;
         }
+        case 0x1: {
+          os << format("OR " FMT_REG " " FMT_REG) % vx % vy;
+          break;
+        }
         case 0x2: {
           os << format("AND " FMT_REG " " FMT_REG) % vx % vy;
+          break;
+        }
+        case 0x3: {
+          os << format("XOR " FMT_REG " " FMT_REG) % vx % vy;
           break;
         }
         case 0x4: {
@@ -113,6 +125,10 @@ void chip8::printInstruction(uint16_t opCode, std::ostream &os) {
         }
         case 0x6: {
           os << format("RSHIFT " FMT_REG) % vx;
+          break;
+        }
+        case 0x7: {
+          os << format("REVSUB " FMT_REG " " FMT_REG) % vx % vy;
           break;
         }
         case 0xE: {
@@ -132,6 +148,10 @@ void chip8::printInstruction(uint16_t opCode, std::ostream &os) {
     }
     case 0xA: {
       os << format("SET.INDEX " FMT_VAL(3)) % address;
+      break;
+    }
+    case 0xB: {
+      os << format("GOTO.V0 " FMT_VAL(3)) % address;
       break;
     }
     case 0xC: {
@@ -161,12 +181,12 @@ void chip8::printInstruction(uint16_t opCode, std::ostream &os) {
     }
     case 0xF: {
       switch(opCode & 0x00FF) {
-        case 0x000A: {
-          os << format("WAIT.KEY " FMT_REG) % vx;
-          break;
-        }
         case 0x0007: {
           os << format("GET.DELAY " FMT_REG) % vx;
+          break;
+        }
+        case 0x000A: {
+          os << format("WAIT.KEY " FMT_REG) % vx;
           break;
         }
         case 0x0015: {

@@ -197,6 +197,12 @@ void chip8::Chip8Emu::emulateCycle(int keyEvent, std::ostream *os) {
       }
       break;
     }
+    case 0x5: {
+      if (V[vx] != immediate) {
+        pc += 2;
+      }
+      break;
+    }
     case 0x6: {
       V[vx] = immediate;
       break;
@@ -211,8 +217,16 @@ void chip8::Chip8Emu::emulateCycle(int keyEvent, std::ostream *os) {
           V[vx] = V[vy];
           break;
         }
+        case 0x1: {
+          V[vx] = V[vx] | V[vy];
+          break;
+        }
         case 0x2: {
           V[vx] = V[vx] & V[vy];
+          break;
+        }
+        case 0x3: {
+          V[vx] = V[vx] ^ V[vy];
           break;
         }
         case 0x4: {
@@ -225,12 +239,17 @@ void chip8::Chip8Emu::emulateCycle(int keyEvent, std::ostream *os) {
           uint8_t oldVx = V[vx];
           V[vx] = V[vx] - V[vy];
           V[0xF] = (oldVx > V[vx]) ? 1 : 0;
-          // V[0xF] = (oldVx < V[vx]) ? 1 : 0;
           break;
         }
         case 0x6: {
           V[0xF] = V[vx] & 1;
           V[vx] = V[vx] >> 1;
+          break;
+        }
+        case 0x7: {
+          uint8_t oldVx = V[vx];
+          V[vx] = V[vy] - V[vx];
+          V[0xF] = (oldVx > V[vx]) ? 1 : 0;
           break;
         }
         case 0xE: {
@@ -254,6 +273,11 @@ void chip8::Chip8Emu::emulateCycle(int keyEvent, std::ostream *os) {
     }
     case 0xA: {
       I = address;
+      break;
+    }
+    case 0xB: {
+      pc = V[0] + address;
+      incrementPc = false;
       break;
     }
     case 0xC: {
@@ -323,6 +347,10 @@ void chip8::Chip8Emu::emulateCycle(int keyEvent, std::ostream *os) {
     }
     case 0xF: {
       switch(immediate) {
+        case 0x0007: {
+          V[vx] = delayTimer;
+          break;
+        }
         case 0x000A: {
           if (keyEvent == -1) {
             state = EmulationState::RUNNING_WAITING_INPUT;
@@ -331,10 +359,6 @@ void chip8::Chip8Emu::emulateCycle(int keyEvent, std::ostream *os) {
             state = EmulationState::RUNNING;
             V[vx] = keyEvent;
           }
-          break;
-        }
-        case 0x0007: {
-          V[vx] = delayTimer;
           break;
         }
         case 0x0015: {
